@@ -139,14 +139,13 @@ void destroy_window()
 	SDL_Quit();
 }
 
-int Engine()
-{
-	process_input(game_is_running);
-	update();
-	render();
-	return 1;
-}
 //int Engine()
+//{
+//	process_input(game_is_running);
+//	update();
+//	render();
+//	return 1;
+//}
 
 int main(int argc, char* args[])
 {
