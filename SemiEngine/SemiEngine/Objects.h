@@ -5,4 +5,4 @@ struct ball
 	float y;
 	float width;
 	float height;
-} ball, ball2;
+} ball, playerFirst, playerSecond;

@@ -1,6 +1,13 @@
 #pragma once
 void FrameCap();
 
+void PlayerFirstPressControl();
+
+void PlayerFirstKeyUp();
+
+void PlayerFirstKeyDown();
+
+
 int game_is_running = FALSE;
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -12,3 +19,14 @@ SDL_Event event;
 float delta_time;
 
 int time_to_wait;
+
+int ballx = 140;
+int bally = 100;
+
+int speed = 1000;
+
+int is_w_pressed = FALSE;
+int is_s_pressed = FALSE;
+
+int is_up_pressed = FALSE;
+int is_down_pressed = FALSE;
