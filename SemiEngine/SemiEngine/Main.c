@@ -8,7 +8,49 @@
 
 
 
-//Methods------------------------------------
+//Methods-------------------------------------
+
+//Generals
+void destroy_window()
+{
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+}
+int InitializeWindow(void)
+{
+	//Init error control
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+	{
+		fprintf(stderr, "Error initializing SDL.\n");
+		return FALSE;
+	}
+
+	//create window
+	window = SDL_CreateWindow(
+		"SEMI ENGINE",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		WINDOW_WIDTH,
+		WINDOW_HEIGHT,
+		SDL_WINDOW_BORDERLESS
+	);
+	renderer = SDL_CreateRenderer(window, -1, 0);
+
+	//Render and window controls
+	if (!window)
+	{
+		fprintf(stderr, "Error while creating SDL Window.\n");
+		return FALSE;
+	}
+	if (!renderer)
+	{
+		fprintf(stderr, "Error creating while SDL Renderer.\n");
+		return FALSE;
+	}
+
+	return TRUE;
+}
 
 //First player
 void PlayerFirstKeyDown()
@@ -34,6 +76,17 @@ void PlayerFirstPressControl()
 	if (is_s_pressed)
 	{
 		playerFirst.y += speed * delta_time; // Yukarý hareket
+	}
+}
+void PlayerFirstFixPos()
+{
+	if (playerFirst.y + playerFirst.height >= WINDOW_HEIGHT)
+	{
+		playerFirst.y =  WINDOW_HEIGHT - playerFirst.height;
+	}
+	else if (playerFirst.y <= 0)
+	{
+		playerFirst.y = 0;
 	}
 }
 
@@ -63,46 +116,43 @@ void PlayerSecondPressControl()
 		playerSecond.y += speed * delta_time; // Yukarý hareket
 	}
 }
-
-//End-Methods------------------------------------
-
-
-
-
-int InitializeWindow(void)
+void PlayerSecondFixPos()
 {
-	//Init error control
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+	if (playerSecond.y + playerSecond.height >= WINDOW_HEIGHT)
 	{
-		fprintf(stderr, "Error initializing SDL.\n");
-		return FALSE;
+		playerSecond.y = WINDOW_HEIGHT - playerSecond.height;
 	}
-
-	//create window
-	window = SDL_CreateWindow(
-		"SEMI ENGINE",
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
-		WINDOW_WIDTH,
-		WINDOW_HEIGHT,
-		SDL_WINDOW_BORDERLESS
-	);
-	renderer = SDL_CreateRenderer(window, -1, 0);
-
-	//Render and window controls
-	if(!window)
+	else if (playerSecond.y <= 0)
 	{
-		fprintf(stderr, "Error while creating SDL Window.\n");
-		return FALSE;
+		playerSecond.y = 0;
 	}
-	if(!renderer)
-	{
-		fprintf(stderr, "Error creating while SDL Renderer.\n");
-		return FALSE;
-	}
-
-	return TRUE;
 }
+
+//Ball
+void BallMove(struct ball* ball, int speedx, int speedy)
+{
+	ball->x += ballx * delta_time;
+	if (ball->x + ball->width >= WINDOW_WIDTH)//Sað köþe
+	{
+		ballx = -speedx;
+	}
+	else if (ball->x <= 0)//Sol Köþe
+	{
+		ballx = speedx * 4;
+	}
+	ball->y += bally * delta_time;
+	if (ball->y + ball->height >= WINDOW_HEIGHT)//Aþaðý köþe
+	{
+		bally = -speedy;
+	}
+	else if (ball->y <= 0)//Yukarý köþe
+	{
+		bally = speedy * 2;
+	}
+}
+
+//End-Methods---------------------------------
+
 
 
 void process_input()
@@ -131,22 +181,20 @@ void process_input()
 	PlayerSecondPressControl();
 }
 
-
 void setup()
 {
-
-	ball.x = 20;
-	ball.y = 20;
+	ball.x = 400;
+	ball.y = 300;
 	ball.width = 15;
 	ball.height = 15;
 
 	playerFirst.x = 20;
-	playerFirst.y = 20;
+	playerFirst.y = 225;
 	playerFirst.width = 15;
 	playerFirst.height = 125;
 
 	playerSecond.x = 765;
-	playerSecond.y = 20;
+	playerSecond.y = 225;
 	playerSecond.width = 15;
 	playerSecond.height = 125;
 }
@@ -159,33 +207,12 @@ void FrameCap()
 		SDL_Delay(time_to_wait);
 	}
 }
-void BallMove(struct ball *ball, int speedx, int speedy)
-{
-	ball->x += ballx * delta_time;
-	if (ball->x + ball->width >= WINDOW_WIDTH)//Sað köþe
-	{
-		ballx = -speedx;
-	}
-	else if (ball->x <= 0)//Sol Köþe
-	{
-		ballx = speedx * 4;
-	}
-	ball->y += bally * delta_time;
-	if (ball->y + ball->height >= WINDOW_HEIGHT)//Aþaðý köþe
-	{
-		bally = -speedy;
-	}
-	else if (ball->y <= 0)//Yukarý köþe
-	{
-		bally = speedy * 2;
-	}
-}
-
-
 void update()
 {
-	BallMove(&ball, 140, 100);
+	PlayerFirstFixPos();
+	PlayerSecondFixPos();
 
+	BallMove(&ball, 140, 100);
 
 
 	//FRAME CAP FUNCTION. Bu fonksiyon, kareleri ard arda yüklemek yerine kareler arasýnda bekleme yapýyor
@@ -197,6 +224,7 @@ void update()
 
 	//Ball2Move();
 }
+
 
 //void Ball2Move()
 //{
@@ -219,6 +247,7 @@ void update()
 //		ball2y = 100;
 //	}
 //}
+
 
 void render()
 {
@@ -253,18 +282,12 @@ void render()
 		(int)playerSecond.width,
 		(int)playerSecond.height
 	};
-	SDL_SetRenderDrawColor(renderer, 255, 255, 30, 255);
+	SDL_SetRenderDrawColor(renderer, 255, 30, 30, 255);
 	SDL_RenderFillRect(renderer, &playerSecond_rect);
 
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderDrawLineF(renderer, 400, 0, 400, 600);
 	SDL_RenderPresent(renderer);
-}
-
-void destroy_window()
-{
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	SDL_Quit();
 }
 
 
@@ -284,7 +307,6 @@ int main(int argc, char* args[])
 	}
 
 	destroy_window();
-
 
 	return FALSE;
 }

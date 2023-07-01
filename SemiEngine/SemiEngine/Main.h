@@ -1,11 +1,26 @@
 #pragma once
 void FrameCap();
 
-void PlayerFirstPressControl();
+void PlayerSecondFixPos();
+
+void PlayerFirstFixPos();
+
+
+void destroy_window(); 
+int InitializeWindow(void);
+
 
 void PlayerFirstKeyUp();
-
 void PlayerFirstKeyDown();
+void PlayerFirstPressControl();
+
+
+void PlayerSecondKeyDown();
+void PlayerSecondKeyUp();
+void PlayerSecondPressControl();
+
+
+void BallMove(struct ball* ball, int speedx, int speedy);
 
 
 int game_is_running = FALSE;
@@ -23,7 +38,7 @@ int time_to_wait;
 int ballx = 140;
 int bally = 100;
 
-int speed = 1000;
+int speed = 400;
 
 int is_w_pressed = FALSE;
 int is_s_pressed = FALSE;
