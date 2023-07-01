@@ -1,34 +1,16 @@
 #include<stdio.h>
 #include<SDL.h>
 #include <SDL_main.h>
+//My Headers
 #include "./constants.h"
-
-
-int game_is_running = FALSE;
-SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
-
-int last_frame_time = 0;
-
-SDL_Event event;
-
-float delta_time;
-
-//Objects-------------------------------------------------------------------------------
-struct ball
-{
-	float x;
-	float y;
-	float width;
-	float height;
-} ball, ball2;
-//End-Objects-------------------------------------------------------------------------------
+#include "Main.h"
+#include "Objects.h"
 
 
 int InitializeWindow(void)
 {
 	//Init error control
-	if( SDL_Init(SDL_INIT_EVERYTHING) != 0)
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
 		fprintf(stderr, "Error initializing SDL.\n");
 		return FALSE;
@@ -91,15 +73,18 @@ void setup()
 	ball2.height = 15;
 }
 
-void update()
+void FrameCap()
 {
-	//FRAME CAP FUNCTION. Bu fonksiyon, kareleri ard arda yüklemek yerine kareler arasýnda bekleme yapýyor
-	int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - last_frame_time);
+	time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - last_frame_time);
 	if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME)
 	{
 		SDL_Delay(time_to_wait);
 	}
-
+}
+void update()
+{
+	//FRAME CAP FUNCTION. Bu fonksiyon, kareleri ard arda yüklemek yerine kareler arasýnda bekleme yapýyor
+	FrameCap();
 	//Delta time deðiþkenini saniye cinsinden günceller
 	delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
 
@@ -108,7 +93,7 @@ void update()
 	ball.x += 70 * delta_time;
 	ball.y += 50 * delta_time;
 
-	ball2.x += 70 * delta_time;
+	ball2.x += 10 * delta_time;
 	ball2.y += 50 * delta_time;
 }
 
@@ -124,9 +109,15 @@ void render()
 		(int)ball.width,
 		(int)ball.height
 	};
+	SDL_Rect ball2_rect = {
+	(int)ball2.x,
+	(int)ball2.y,
+	(int)ball2.width,
+	(int)ball2.height
+	};
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderFillRect(renderer, &ball_rect);
-
+	SDL_RenderFillRect(renderer, &ball2_rect);
 	 
 	//SDL_RenderDrawLineF(renderer, 400, 0, 400, 600);
 	SDL_RenderPresent(renderer);
@@ -139,13 +130,6 @@ void destroy_window()
 	SDL_Quit();
 }
 
-//int Engine()
-//{
-//	process_input(game_is_running);
-//	update();
-//	render();
-//	return 1;
-//}
 
 int main(int argc, char* args[])
 {
@@ -161,10 +145,6 @@ int main(int argc, char* args[])
 		update();
 		render();
 	}
-
-	//engine:
-	//Engine();
-	//goto engine;
 
 	destroy_window();
 
