@@ -71,11 +71,11 @@ void PlayerFirstPressControl()
 {
 	if (is_w_pressed)
 	{
-		playerFirst.y -= speed * delta_time; // Yukarý hareket
+		playerFirst.y -= playerSpeed * delta_time; // Yukarý hareket
 	}
 	if (is_s_pressed)
 	{
-		playerFirst.y += speed * delta_time; // Yukarý hareket
+		playerFirst.y += playerSpeed * delta_time; // Yukarý hareket
 	}
 }
 void PlayerFirstFixPos()
@@ -109,11 +109,11 @@ void PlayerSecondPressControl()
 {
 	if (is_up_pressed)
 	{
-		playerSecond.y -= speed * delta_time; // Yukarý hareket
+		playerSecond.y -= playerSpeed * delta_time; // Yukarý hareket
 	}
 	if (is_down_pressed)
 	{
-		playerSecond.y += speed * delta_time; // Yukarý hareket
+		playerSecond.y += playerSpeed * delta_time; // Yukarý hareket
 	}
 }
 void PlayerSecondFixPos()
@@ -132,12 +132,23 @@ void PlayerSecondFixPos()
 void BallMove(struct ball* ball, int speedx, int speedy)
 {
 	ball->x += ballx * delta_time;
-	if (ball->x + ball->width >= WINDOW_WIDTH)//Sað köþe
+
+	if (ball->x <= rightCornerplayerFirst && ball->y + ball->height/*sol alt köþe*/ >= playerFirst.y &&  ball->y <= playerFirst.y + playerFirst.height)
 	{
+		ballx = speedx;
+	}                                       
+	else if (ball->x + ball->width >= playerSecond.x && ball->y + ball->height >= playerSecond.y && ball->y <= playerSecond.y + playerSecond.height)
+	{
+		ballx = -speedx;
+	}
+	else if (ball->x + ball->width >= WINDOW_WIDTH)//Sað köþe
+	{
+		//Puan sistemi yapýlacak ve top spawna düþecek.
 		ballx = -speedx;
 	}
 	else if (ball->x <= 0)//Sol Köþe
 	{
+		//Puan sistemi yapýlacak ve top spawna düþecek.
 		ballx = speedx * 4;
 	}
 	ball->y += bally * delta_time;
@@ -181,6 +192,8 @@ void process_input()
 	PlayerSecondPressControl();
 }
 
+
+
 void setup()
 {
 	ball.x = 400;
@@ -192,12 +205,16 @@ void setup()
 	playerFirst.y = 225;
 	playerFirst.width = 15;
 	playerFirst.height = 125;
+	rightCornerplayerFirst = playerFirst.x + playerFirst.width;
+	
 
 	playerSecond.x = 765;
 	playerSecond.y = 225;
 	playerSecond.width = 15;
 	playerSecond.height = 125;
 }
+
+
 
 void FrameCap()
 {
@@ -209,6 +226,8 @@ void FrameCap()
 }
 void update()
 {
+	
+
 	PlayerFirstFixPos();
 	PlayerSecondFixPos();
 
@@ -224,6 +243,7 @@ void update()
 
 	//Ball2Move();
 }
+
 
 
 //void Ball2Move()
@@ -247,6 +267,7 @@ void update()
 //		ball2y = 100;
 //	}
 //}
+
 
 
 void render()

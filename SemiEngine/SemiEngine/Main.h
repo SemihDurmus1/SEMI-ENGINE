@@ -38,10 +38,14 @@ int time_to_wait;
 int ballx = 140;
 int bally = 100;
 
-int speed = 400;
+int playerSpeed = 400;
 
 int is_w_pressed = FALSE;
 int is_s_pressed = FALSE;
 
 int is_up_pressed = FALSE;
 int is_down_pressed = FALSE;
+
+int rightCornerplayerFirst;
+
+int leftCornerBall;
