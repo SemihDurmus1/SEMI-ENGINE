@@ -1,4 +1,4 @@
 ﻿  Main.c
-C:\UnityGames\UnityGitHub\SEMI-ENGINE\SemiEngine\SemiEngine\Main.c(203,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\UnityGames\UnityGitHub\SEMI-ENGINE\SemiEngine\SemiEngine\Main.c(208,41): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\UnityGames\UnityGitHub\SEMI-ENGINE\SemiEngine\SemiEngine\Main.c(134,1): warning C4026: function declared with formal parameter list
+C:\UnityGames\UnityGitHub\SEMI-ENGINE\SemiEngine\SemiEngine\Main.c(235,41): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   SemiEngine.vcxproj -> C:\UnityGames\UnityGitHub\SEMI-ENGINE\SemiEngine\x64\Debug\SemiEngine.exe

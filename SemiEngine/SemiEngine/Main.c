@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<SDL.h>
 #include <SDL_main.h>
+#include <time.h>
 //SEMI ENGINE HEADERS
 #include "./constants.h"
 #include "Main.h"
@@ -129,36 +130,61 @@ void PlayerSecondFixPos()
 }
 
 //Ball
+void RespawnBall() 
+{
+	ball.x = WINDOW_WIDTH / 2;
+	ballSpeedX *= -1;
+}
 void BallMove(struct ball* ball, int speedx, int speedy)
 {
-	ball->x += ballx * delta_time;
-
-	if (ball->x <= rightCornerplayerFirst && ball->y + ball->height/*sol alt köþe*/ >= playerFirst.y &&  ball->y <= playerFirst.y + playerFirst.height)
+	//Topun, player arkasýna geçtiði yerin y deðerini tersleyerek ekranýn ortasýndan baþlatabiliriz, 
+	//veya topun geçtiði yerin x deðerinden
+	ball->x += ballSpeedX * delta_time;
+	/*
+	PlayerFirst-----------------------------------------------------------------------------------------
+	  ball->x: Left top corner of the ball.
+	  ball->y + ball->height: Bottom Y value of ball.
+	  ball->y + ball->height >= playerFirst.y: if balls bottom side and players top side collide.
+	  ball->y <= playerFirst.y + playerFirst.height: if top side of ball and bot side of player collide.
+	End of PlayerFirst----------------------------------------------------------------------------------
+	*/
+	if (ball->x <= rightCornerplayerFirst && ball->y + ball->height >= playerFirst.y &&  ball->y <= playerFirst.y + playerFirst.height)
 	{
-		ballx = speedx;
-	}                                       
+		ballSpeedX = speedx;
+	}    
+	/*
+	PlayerSecond----------------------------------------------------------------------------------------
+	  ball->x + ball->width: The right top corner off ball.
+	  ball->y + ball->height: Bottom Y value of ball.
+	  ball->y + ball->height >= playerSecond.y: if bottom of ball and top of player collide.
+	  ball->y <= playerSecond.y + playerSecond.height: if balls top side collies with players bot side.
+	*/
 	else if (ball->x + ball->width >= playerSecond.x && ball->y + ball->height >= playerSecond.y && ball->y <= playerSecond.y + playerSecond.height)
 	{
-		ballx = -speedx;
+		ballSpeedX = -speedx;
 	}
-	else if (ball->x + ball->width >= WINDOW_WIDTH)//Sað köþe
+	else if (ball->x + ball->width >= WINDOW_WIDTH)//Right Side collide
+	{
+
+		//Puan sistemi yapýlacak ve top spawna düþecek.
+		ballSpeedX = -speedx;
+		RespawnBall();
+
+	}
+	else if (ball->x <= 0)//Left Side
 	{
 		//Puan sistemi yapýlacak ve top spawna düþecek.
-		ballx = -speedx;
+		ballSpeedX = speedx;
+		RespawnBall();
 	}
-	else if (ball->x <= 0)//Sol Köþe
+	ball->y += ballSpeedY * delta_time;
+	if (ball->y + ball->height >= WINDOW_HEIGHT)//Bottom Side
 	{
-		//Puan sistemi yapýlacak ve top spawna düþecek.
-		ballx = speedx * 4;
+		ballSpeedY = -speedy;
 	}
-	ball->y += bally * delta_time;
-	if (ball->y + ball->height >= WINDOW_HEIGHT)//Aþaðý köþe
+	else if (ball->y <= 0)//Top Side
 	{
-		bally = -speedy;
-	}
-	else if (ball->y <= 0)//Yukarý köþe
-	{
-		bally = speedy * 2;
+		ballSpeedY = speedy;
 	}
 }
 
@@ -196,6 +222,7 @@ void process_input()
 
 void setup()
 {
+
 	ball.x = 400;
 	ball.y = 300;
 	ball.width = 15;
@@ -204,14 +231,14 @@ void setup()
 	playerFirst.x = 20;
 	playerFirst.y = 225;
 	playerFirst.width = 15;
-	playerFirst.height = 125;
+	playerFirst.height = 75;
 	rightCornerplayerFirst = playerFirst.x + playerFirst.width;
 	
 
 	playerSecond.x = 765;
 	playerSecond.y = 225;
 	playerSecond.width = 15;
-	playerSecond.height = 125;
+	playerSecond.height = 75;
 }
 
 
@@ -226,16 +253,15 @@ void FrameCap()
 }
 void update()
 {
-	
 
 	PlayerFirstFixPos();
 	PlayerSecondFixPos();
 
-	BallMove(&ball, 140, 100);
-
+	BallMove(&ball, 500, 500);
 
 	//FRAME CAP FUNCTION. Bu fonksiyon, kareleri ard arda yüklemek yerine kareler arasýnda bekleme yapýyor
 	FrameCap();
+	
 	//Delta time deðiþkenini saniye cinsinden günceller
 	delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
 
@@ -243,31 +269,6 @@ void update()
 
 	//Ball2Move();
 }
-
-
-
-//void Ball2Move()
-//{
-//	ball2.x += ball2x * delta_time;
-//	if (ball2.x + ball2.width >= WINDOW_WIDTH)//Sað köþe
-//	{
-//		ball2x = -50 * 4;
-//	}
-//	else if (ball2.x <= 0)//Sol Köþe
-//	{
-//		ball2x = 50;
-//	}
-//	ball2.y += ball2y * delta_time;
-//	if (ball2.y + ball2.height >= WINDOW_HEIGHT)//Aþaðý köþe
-//	{
-//		ball2y = -100 * 2;
-//	}
-//	else if (ball2.y <= 0)//Yukarý köþe
-//	{
-//		ball2y = 100;
-//	}
-//}
-
 
 
 void render()
@@ -310,6 +311,7 @@ void render()
 	SDL_RenderDrawLineF(renderer, 400, 0, 400, 600);
 	SDL_RenderPresent(renderer);
 }
+
 
 
 int main(int argc, char* args[])

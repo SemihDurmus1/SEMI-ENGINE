@@ -1,25 +1,24 @@
 #pragma once
 void FrameCap();
 
-void PlayerSecondFixPos();
 
-void PlayerFirstFixPos();
-
-
-void destroy_window(); 
+void destroy_window();
 int InitializeWindow(void);
 
 
+void PlayerFirstFixPos();
 void PlayerFirstKeyUp();
 void PlayerFirstKeyDown();
 void PlayerFirstPressControl();
 
 
-void PlayerSecondKeyDown();
+void PlayerSecondFixPos();
 void PlayerSecondKeyUp();
+void PlayerSecondKeyDown();
 void PlayerSecondPressControl();
 
 
+void RespawnBall(struct ball* ball);
 void BallMove(struct ball* ball, int speedx, int speedy);
 
 
@@ -35,10 +34,10 @@ float delta_time;
 
 int time_to_wait;
 
-int ballx = 140;
-int bally = 100;
+int ballSpeedX = 500;
+int ballSpeedY = 500;
 
-int playerSpeed = 400;
+int playerSpeed = 600;
 
 int is_w_pressed = FALSE;
 int is_s_pressed = FALSE;
